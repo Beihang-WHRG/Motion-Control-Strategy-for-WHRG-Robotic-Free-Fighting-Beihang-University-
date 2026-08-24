@@ -1,0 +1,282 @@
+# =====================================================================
+#  G1 搏击策略预设 (config.yaml) —— Boxing + Punch + Leftkick + Rightkick + SpinKick + Recovery
+#  启动: ./g1_ctrl -n lo -c config.yaml
+# =====================================================================
+#  状态与自动流程:
+#   - Boxing  (id 5, RLBase, 速度指令拳击 locomotion): 手动进入/基础策略
+#   - Punch (id 6, State_Punch, WBT 拳击动作): 按键触发一次性播放 -> 播完自动回 Boxing
+#   - Leftkick (id 7, State_Leftkick, 足锁推动作):  按键触发一次性播放 -> 播完自动回 Boxing
+#   - Rightkick (id 9, State_Leftkick, WBT 右飞踢动作): 按键触发一次性播放 -> 播完自动回 Boxing
+#   - SpinKick (id 10, State_Punch, 转身踢动作): 按键触发一次性播放 -> 播完自动回 Boxing
+#   - Recovery (id 8, RLBase, AMP 倒地恢复): 任一策略摔倒自动切入 -> 恢复站立自动回 Boxing
+#
+#  自动切换:
+#   - Boxing 固定倾角>30°或高度<0.35m持续100ms -> Recovery
+#   - Punch / Leftkick / Rightkick / SpinKick 相对当前 motion 帧的重力方向误差>30°
+#     或高度<0.35m持续100ms -> Recovery
+#   - Recovery 恢复站立（直立+高度>=0.55m+角速度<1.0 持续500ms） -> Boxing
+#   - Punch / Leftkick / Rightkick / SpinKick 触发播放并播完后自动回 Boxing
+#
+#  手动切换（手柄）:
+#   - BoxingFixStand: RB+A=Boxing, RB+上=Punch, RB+左=Leftkick, RB+右=Rightkick, RB+下=SpinKick
+#               RT+A=Velocity, LT+B=Passive（RB 对应宇树手柄 R1）
+#   - 键盘状态: 0=Passive 2=BoxingFixStand 3=Velocity 4=DefaultFixStand 5=Boxing 6=Punch 7=Leftkick 8=Recovery 9=Rightkick K=SpinKick
+#   - 键盘移动: W/S=前后 A/D=左右 Q/E=转向
+# =====================================================================
+
+FSM:
+  _: # enabled fsms
+    Passive:
+      id: 1
+    BoxingFixStand:
+      id: 2
+    DefaultFixStand:
+      id: 4
+      type: BoxingFixStand
+    Velocity:
+      id: 3
+      type: RLBase
+    #locomotion
+    Boxing:
+      id: 5
+      type: RLBase
+    #拳击
+    Punch:
+      id: 6
+      type: Punch
+    #左飞踢
+    Leftkick:
+      id: 7
+      type: Leftkick
+    #右飞踢
+    Rightkick:
+      id: 9
+      type: Leftkick
+    #转身踢
+    SpinKick:
+      id: 10
+      type: Punch
+    Recovery:
+      id: 8
+      type: RLBase
+
+  Passive:
+    transitions:
+      BoxingFixStand: LT + up.on_pressed
+      Recovery: LT + down.on_pressed
+      DefaultFixStand: LT + right.on_pressed
+    mode: [
+      1,1,1,1,1,1,
+      1,1,1,1,1,1,
+      1,1,1,
+      1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,
+    ]
+    kd: [
+      3,3,3,3,3,3,
+      3,3,3,3,3,3,
+      3,3,3,
+      3,3,3,3,3,3,3,
+      3,3,3,3,3,3,3,
+    ]
+
+  # 默认站立姿态（qpos 顺序，所有策略统一站姿）
+  BoxingFixStand:
+    transitions:
+      Passive: LT + B.on_pressed
+      Velocity: RT + A.on_pressed
+      Boxing: RB + A.on_pressed
+      Punch: RB + up.on_pressed
+      Leftkick: RB + left.on_pressed
+      Rightkick: RB + right.on_pressed
+      SpinKick: RB + down.on_pressed
+    kp: [
+      100,100,100,150,40,40,
+      100,100,100,150,40,40,
+      200,200,200,
+      40,40,40,40,40,40,40,
+      40,40,40,40,40,40,40,
+    ]
+    kd: [
+      2,2,2,4,2,2,
+      2,2,2,4,2,2,
+      5,5,5,
+      10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,
+    ]
+    ts: [0, 2]
+    qs: [
+      [],
+      [-0.645,0.151,0.001,0.938,-0.27,-0.098,-0.415,-0.254,-0.209,1.025,-0.572,0.076,0.0,0.0,0.0,-0.728,0.108,-0.009,0.088,-0.126,-0.066,-0.025,-0.755,-0.224,0.241,-0.088,0.126,-0.066,0.031]
+    ]
+
+  # 官方 G1 默认站立姿态（qpos 顺序，腿部屈膝、腰部归零）
+  DefaultFixStand:
+    transitions:
+      Passive: LT + B.on_pressed
+      BoxingFixStand: LT + up.on_pressed
+      Velocity: RT + A.on_pressed
+      Recovery: LT + down.on_pressed
+    kp: [
+      100,100,100,150,40,40,
+      100,100,100,150,40,40,
+      200,200,200,
+      40,40,40,40,40,40,40,
+      40,40,40,40,40,40,40,
+    ]
+    kd: [
+      2,2,2,4,2,2,
+      2,2,2,4,2,2,
+      5,5,5,
+      10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,
+    ]
+    ts: [0, 2]
+    qs: [
+      [],
+      [-0.312,0.0,0.0,0.669,-0.363,0.0,-0.312,0.0,0.0,0.669,-0.363,0.0,0.0,0.0,0.0,0.2,0.2,0.0,0.6,0.0,0.0,0.0,0.2,-0.2,0.0,0.6,0.0,0.0,0.0]
+    ]
+
+  Velocity:
+    transitions:
+      Passive: LT + B.on_pressed
+      BoxingFixStand: LT + up.on_pressed
+      Boxing: RB + A.on_pressed
+      Punch: RB + up.on_pressed
+      Leftkick: RB + left.on_pressed
+      Rightkick: RB + right.on_pressed
+      SpinKick: RB + down.on_pressed
+    policy_dir: config/policy/velocity
+
+  # ---- Boxing 拳击（基础策略，速度指令驱动 + 5帧历史）----
+  # 摔倒自动切 Recovery
+  Boxing:
+    transitions:
+      Passive: LT + B.on_pressed
+      BoxingFixStand: LT + up.on_pressed
+      Velocity: RT + A.on_pressed
+      Punch: RB + up.on_pressed
+      Leftkick: RB + left.on_pressed
+      Rightkick: RB + right.on_pressed
+      SpinKick: RB + down.on_pressed
+    policy_dir: config/policy/Boxing
+    enable_bad_orientation_check: false
+    fall_detection:
+      target: Recovery
+      max_tilt: 0.523599     # 30 度
+      min_height: 0.35
+      height_enabled: true
+      confirm_ms: 100
+
+  # ---- Punch 拳击动作（State_Punch，按键触发一次性播放，播完自动回 Boxing）----
+  Punch:
+    transitions:
+      Passive: LT + B.on_pressed
+      BoxingFixStand: LT + up.on_pressed
+      Velocity: RT + A.on_pressed
+      Boxing: RB + A.on_pressed
+      Rightkick: RB + right.on_pressed
+      SpinKick: RB + down.on_pressed
+    policy_dir: config/policy/Punch
+    motion_file: config/policy/Punch/motion/motion.npz
+    enable_bad_orientation_check: false
+    fall_detection:
+      target: Recovery
+      max_gravity_error: 0.523599  # 相对当前 motion 帧的重力方向误差阈值（30度）
+      min_height: 0.35
+      height_enabled: true
+      confirm_ms: 100
+    end_state: Boxing     # 播放完毕自动回 Boxing
+
+  # ---- Rightkick 右飞踢动作（复用 State_Leftkick，按键触发一次性播放，播完自动回 Boxing）----
+  Rightkick:
+    transitions:
+      Passive: LT + B.on_pressed
+      BoxingFixStand: LT + up.on_pressed
+      Velocity: RT + A.on_pressed
+      Boxing: RB + A.on_pressed
+      Punch: RB + up.on_pressed
+      Leftkick: RB + left.on_pressed
+      SpinKick: RB + down.on_pressed
+    policy_dir: config/policy/Rightkick
+    # 仅保留 cnpy 支持的 4 个 float 数组，内容来自 motion_new.npz。
+    motion_file: config/policy/Rightkick/motion/motion_new_deploy.npz
+    enable_bad_orientation_check: false
+    fall_detection:
+      target: Recovery
+      max_gravity_error: 0.523599  # 相对当前 motion 帧的重力方向误差阈值（30度）
+      min_height: 0.35
+      height_enabled: true
+      confirm_ms: 100
+    end_state: Boxing     # 播放完毕自动回 Boxing
+
+  # ---- Leftkick 足锁推动作（State_Leftkick，按键触发一次性播放，播完自动回 Boxing）----
+  Leftkick:
+    transitions:
+      Passive: LT + B.on_pressed
+      BoxingFixStand: LT + up.on_pressed
+      Velocity: RT + A.on_pressed
+      Boxing: RB + A.on_pressed
+      Rightkick: RB + right.on_pressed
+      SpinKick: RB + down.on_pressed
+    policy_dir: config/policy/Leftkick
+    motion_file: config/policy/Leftkick/motion/motion_deploy.npz
+    enable_bad_orientation_check: false
+    fall_detection:
+      target: Recovery
+      max_gravity_error: 0.523599 # 相对当前 motion 帧的重力方向误差阈值（30度）
+      min_height: 0.35
+      height_enabled: true
+      confirm_ms: 100
+    end_state: Boxing     # 播放完毕自动回 Boxing
+
+  # ---- SpinKick 转身踢动作（复用 State_Punch，按键触发一次性播放，播完自动回 Boxing）----
+  SpinKick:
+    transitions:
+      Passive: LT + B.on_pressed
+      BoxingFixStand: LT + up.on_pressed
+      Velocity: RT + A.on_pressed
+      Boxing: RB + A.on_pressed
+      Punch: RB + up.on_pressed
+      Leftkick: RB + left.on_pressed
+      Rightkick: RB + right.on_pressed
+    policy_dir: config/policy/spinkick
+    motion_file: config/policy/spinkick/motion/motion.npz
+    enable_bad_orientation_check: false
+    fall_detection:
+      target: Recovery
+      max_gravity_error: 0.523599  # 相对当前 motion 帧的重力方向误差阈值（30度）
+      min_height: 0.35
+      height_enabled: true
+      confirm_ms: 100
+    end_state: Boxing     # 播放完毕自动回 Boxing
+
+  # ---- Recovery AMP 倒地恢复（恢复站立后统一回 Boxing）----
+  Recovery:
+    transitions:
+      Passive: LT + B.on_pressed
+      BoxingFixStand: LT + up.on_pressed
+      Velocity: RT + A.on_pressed
+      Boxing: RB + A.on_pressed
+    policy_dir: config/policy/Recovery
+    enable_bad_orientation_check: false
+    recovery_gate:
+      target: Boxing
+      min_height: 0.55
+      max_tilt: 0.30
+      max_root_ang_vel: 1.0
+      height_enabled: true
+      require_height_source: false
+      confirm_ms: 500
+
+# =====================================================================
+#  健康日志 (g1_health_logger)
+# =====================================================================
+health_log:
+  enabled: false
+  out_dir: logs/g1_health
+  control_hz: 1000.0
+  log_hz: 50.0
+  print_hz: 1.0
+  ring_seconds: 30.0
+  enable_bms: true

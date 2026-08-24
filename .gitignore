@@ -1,0 +1,9 @@
+deploy/robots/g1/build/
+deploy/robots/g1/logs/
+logs/
+core
+core.*
+*.log
+*.csv
+__pycache__/
+*.pyc
