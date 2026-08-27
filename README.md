@@ -1,8 +1,36 @@
-# Unitree G1 Boxing Deployment
+# Unitree G1 Free-Fighting Policies
 
-宇树 G1 29DOF 搏击策略部署框架，包含速度控制、序列动作、倒地检测、自动恢复以及键盘和手柄状态切换。
+宇树 G1 29DOF 自由搏击策略仓库，统一管理策略训练源码、模型参数和部署状态机。
 
-## Included States
+## Repository Layout
+
+```text
+.
+├── training/                  # 各策略的独立训练项目
+│   ├── README.md              # 训练项目索引和目录规范
+│   └── boxing/                # Boxing locomotion 训练源码
+│       └── README.md          # Boxing 安装、训练和回放说明
+└── deploy/                    # G1 推理与状态机部署
+    └── robots/g1/
+        ├── config/config.yaml
+        └── config/policy/
+```
+
+训练和部署按策略名称对应：训练项目使用适合 Python 的小写目录名，例如 `training/boxing`；部署策略使用状态机名称，例如 `deploy/robots/g1/config/policy/Boxing`。
+
+## Training
+
+当前训练项目：
+
+| Policy | Task | Source | Guide |
+|---|---|---|---|
+| Boxing | `Unitree-G1-29dof-Boxing` | [`training/boxing`](training/boxing/) | [Boxing training guide](training/boxing/README.md) |
+
+训练项目的依赖、安装命令、训练阶段、checkpoint 和回放方法由各自目录内的 README 维护。新增策略时，请同时更新 [training/README.md](training/README.md) 中的项目索引。
+
+## Deployment
+
+部署框架包含速度控制、序列动作、倒地检测、自动恢复以及键盘和手柄状态切换。
 
 | ID | State | Purpose | Gamepad | Keyboard |
 |---:|---|---|---|---|
@@ -17,11 +45,11 @@
 | 9 | Rightkick | 右侧序列动作 | `RB+Right` | `9` |
 | 10 | SpinKick | 转身踢序列动作 | `RB+Down` | `K` |
 
-移动指令使用 `W/S/A/D/Q/E`，`Z` 清零。速度范围和加速度限制分别读取当前策略 `deploy.yaml` 中的 `ranges` 与 `max_acceleration`。
+移动指令使用 `W/S/A/D/Q/E`，`Z` 清零。速度范围和加速度限制读取当前策略 `deploy.yaml` 中的 `ranges` 与 `max_acceleration`。
 
-## Build
+### Build
 
-依赖 Unitree SDK2、Cyclone DDS C++、Eigen3、Boost program_options、yaml-cpp 和 Zlib。ONNX Runtime 的 x86_64 与 aarch64 运行库已放在 `deploy/thirdparty`。
+依赖 Unitree SDK2、Cyclone DDS C++、Eigen3、Boost program_options、yaml-cpp 和 Zlib。仓库中包含 x86_64 与 aarch64 的 ONNX Runtime 运行库。
 
 ```bash
 cd deploy/robots/g1
@@ -29,27 +57,16 @@ cmake -S . -B build
 cmake --build build -j4
 ```
 
-## Run
-
-仿真：
+### Run
 
 ```bash
+# Simulation
 ./build/g1_ctrl -n lo -c config.yaml
-```
 
-真机：
-
-```bash
+# Robot
 ./build/g1_ctrl -n <network-interface> -c config.yaml
 ```
 
-唯一保留的状态机配置是 `deploy/robots/g1/config/config.yaml`。其中包含完整状态转换、动作结束回到 Boxing、倒地进入 Recovery 和恢复完成回到 Boxing 的配置。
+状态机配置位于 [`deploy/robots/g1/config/config.yaml`](deploy/robots/g1/config/config.yaml)，包含动作结束返回 Boxing、倒地进入 Recovery 和恢复完成返回 Boxing 的完整流程。
 
-## Policies
-
-- `Boxing/v0`: 最新搏击 locomotion 策略
-- `velocity/v0`: 通用 locomotion 策略
-- `Recovery/v0`: 倒地恢复策略
-- `Punch`, `Leftkick`, `Rightkick`, `spinkick`: motion 序列动作策略
-
-策略目录中的 `joint_ids_map` 表示策略模型顺序到 Unitree SDK 硬件顺序的映射。`stiffness`、`damping`、默认关节位置和动作均按策略模型顺序提供。
+当前部署策略包括 `Boxing`、`velocity`、`Recovery`、`Punch`、`Leftkick`、`Rightkick` 和 `spinkick`。策略目录中的 `joint_ids_map` 表示策略模型顺序到 Unitree SDK 硬件顺序的映射。

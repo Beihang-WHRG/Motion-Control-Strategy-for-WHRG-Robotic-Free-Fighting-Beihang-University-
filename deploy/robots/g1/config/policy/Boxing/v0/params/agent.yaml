@@ -6,13 +6,13 @@ empirical_normalization: false
 obs_groups: {}
 clip_actions: null
 save_interval: 500
-experiment_name: unitree_g1_29dof_boxing_push_recovery
-run_name: push_recovery_0006
+experiment_name: unitree_g1_29dof_boxing
+run_name: boxing_0006
 logger: wandb
 neptune_project: isaaclab
 wandb_project: isaaclab
 resume: true
-load_run: 2026-08-22_22-47-19_push_recovery_0005
+load_run: 2026-08-22_22-47-19_boxing_0005
 load_checkpoint: model_.*.pt
 class_name: OnPolicyRunner
 policy:

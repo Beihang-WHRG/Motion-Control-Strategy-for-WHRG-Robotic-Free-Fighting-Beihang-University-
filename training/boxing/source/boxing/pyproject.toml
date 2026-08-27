@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "boxing"
+version = "0.1.0"
+description = "Standalone training configuration for G1 boxing locomotion"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = ["argcomplete"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["boxing*"]
