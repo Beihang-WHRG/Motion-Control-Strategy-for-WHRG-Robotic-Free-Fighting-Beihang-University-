@@ -1,0 +1,5 @@
+action=punch
+task=Tracking-Flat-G1-Wo-State-Estimation-Robust-v0
+motion=/root/gpufree-data/whole_body_tracking/artifacts/m_shortmove12_frames280_350_defaultpose_v4:v0/motion.npz
+run=2026-08-08_17-36-03_punch_robust_r3_support_transition_154d_plus_2001
+checkpoint=model_46500.pt

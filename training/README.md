@@ -7,6 +7,9 @@
 | Directory | Gym Task | Deployment Policy | Documentation |
 |---|---|---|---|
 | [`boxing/`](boxing/) | `Unitree-G1-29dof-Boxing` | `Boxing` | [README](boxing/README.md) |
+| [`punch/`](punch/) | `Unitree-G1-29dof-Punch` | `Punch` | [README](punch/README.md) |
+| [`rightkick/`](rightkick/) | `Unitree-G1-29dof-Rightkick` | `Rightkick` | [README](rightkick/README.md) |
+| [`spinkick/`](spinkick/) | `Unitree-G1-29dof-Spinkick` | `Spinkick` | [README](spinkick/README.md) |
 
 ## Directory Convention
 

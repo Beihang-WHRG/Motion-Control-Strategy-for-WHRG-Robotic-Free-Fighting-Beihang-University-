@@ -1,0 +1,5 @@
+action=g9_rightfeiti
+task=Tracking-Flat-G1-Wo-State-Estimation-v0
+motion=/root/gpufree-data/whole_body_tracking/artifacts/G9_rightfeiti_isaaclab:v0/motion.npz
+run=2026-08-12_15-56-16_G9_rightfeiti_scratch_20001
+checkpoint=model_19000.pt

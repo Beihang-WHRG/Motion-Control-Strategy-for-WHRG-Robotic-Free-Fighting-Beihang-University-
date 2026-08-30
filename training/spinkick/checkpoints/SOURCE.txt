@@ -1,0 +1,5 @@
+action=flying_kick
+task=Tracking-Flat-G1-Wo-State-Estimation-v0
+motion=/root/gpufree-data/whole_body_tracking/artifacts/g1_g4_spinning_back_kick:v0/motion.npz
+run=2026-08-04_18-40-22_flying_kick_resume_14500_plus_15001
+checkpoint=model_28500.pt
