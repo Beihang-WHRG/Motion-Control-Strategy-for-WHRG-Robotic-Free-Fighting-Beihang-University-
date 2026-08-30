@@ -10,6 +10,7 @@
 | [`punch/`](punch/) | `Unitree-G1-29dof-Punch` | `Punch` | [README](punch/README.md) |
 | [`rightkick/`](rightkick/) | `Unitree-G1-29dof-Rightkick` | `Rightkick` | [README](rightkick/README.md) |
 | [`spinkick/`](spinkick/) | `Unitree-G1-29dof-Spinkick` | `Spinkick` | [README](spinkick/README.md) |
+| [`motion_processing/`](motion_processing/) | - | - | [README](motion_processing/README.md) - 动作数据处理工具 |
 
 ## Directory Convention
 
