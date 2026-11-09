@@ -183,6 +183,25 @@ cd deploy/robots/g1
 
 `config.yaml` 已是默认配置文件，因此也可以省略 `-c config.yaml`。
 
+## 项目图片与视频
+
+### 图片
+
+![比赛图片 1](competition_photo_01.png)
+![比赛图片 2](competition_photo_02.png)
+![比赛图片 3](competition_photo_03.png)
+![比赛图片 4](competition_photo_04.png)
+![比赛图片 5](competition_photo_05.png)
+![比赛图片 6](competition_photo_06.png)
+![比赛图片 7](competition_photo_07.png)
+
+### 视频
+
+- [比赛视频 1](competition_video_01.mp4)
+- [比赛视频 2](competition_video_02.mp4)
+- [比赛视频 3](competition_video_03.mp4)
+- [比赛视频 4](competition_video_04.mp4)
+
 ## 策略与数据对应关系
 
 部署策略位于 `deploy/robots/g1/config/policy/`。每个策略目录通常包含：
